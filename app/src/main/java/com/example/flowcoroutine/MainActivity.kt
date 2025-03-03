@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
@@ -41,7 +42,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -115,7 +118,7 @@ fun Popup(
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(32.pxToDp()))
-        Box(
+        Row(
             modifier = Modifier
                 .width(276.pxToDp())
                 .height(44.pxToDp())
@@ -127,7 +130,8 @@ fun Popup(
                         end = Offset(1000f, 1000f)
                     )
                 ),
-            contentAlignment = Alignment.Center
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = firstActionText,
@@ -136,23 +140,41 @@ fun Popup(
                 lineHeight = 26.pxToDp().toSp(),
                 color = Color.White,
             )
+            if (firstActionText == "Continue"){
+                Spacer(modifier = Modifier.width(16.pxToDp()))
+                Icon(
+                    painter = painterResource(R.drawable.ic_popup_next),
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
         }
+
         Spacer(modifier = Modifier.height(12.pxToDp()))
-        Box(
+        Row(
             modifier = Modifier
                 .width(276.pxToDp())
                 .height(44.pxToDp())
                 .clip(RoundedCornerShape(999.pxToDp()))
                 .background(Color(0xFF4A0A82)),
-            contentAlignment = Alignment.Center
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = secondActionText,
+                text = firstActionText,
                 modifier = Modifier,
                 fontSize = 18.pxToDp().toSp(),
                 lineHeight = 26.pxToDp().toSp(),
                 color = Color.White,
             )
+            if (secondActionText == "Continue"){
+                Spacer(modifier = Modifier.width(16.pxToDp()))
+                Icon(
+                    painter = painterResource(R.drawable.ic_popup_next),
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
         }
         Spacer(modifier = Modifier.height(32.pxToDp()))
     }
