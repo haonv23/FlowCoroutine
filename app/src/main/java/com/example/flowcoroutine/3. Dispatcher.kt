@@ -15,6 +15,9 @@ import kotlinx.coroutines.runBlocking
 @OptIn(ExperimentalStdlibApi::class)
 fun main(){
     runBlocking {
+        launch {
+            println("Current Dispatcher: ${coroutineContext[CoroutineDispatcher]}")
+        }
         launch(Dispatchers.IO) {
             println("Current Dispatcher: ${coroutineContext[CoroutineDispatcher]}")
         }
