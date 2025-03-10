@@ -1,4 +1,4 @@
-package com.example.flowcoroutine
+package com.example.flowcoroutine.couroutine
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

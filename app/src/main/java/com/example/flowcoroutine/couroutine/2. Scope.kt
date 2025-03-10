@@ -1,4 +1,4 @@
-package com.example.flowcoroutine
+package com.example.flowcoroutine.couroutine
 
 /*
 2. Scope trong Coroutine là gì? Liệt kê các loại scope phổ biến trong Android.

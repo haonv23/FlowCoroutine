@@ -1,4 +1,4 @@
-package com.example.flowcoroutine
+package com.example.flowcoroutine.couroutine
 
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -9,15 +9,15 @@ import kotlinx.coroutines.runBlocking
 4. Giải thích sự khác biệt giữa launch, async và runBlocking.
     - launch:
         + Trả về một job
-        + Không chặn thread
+        + Chạy trên scope cha, không chặn thread
         + Xử lý ngoại lệ: Truyền lên CoroutineScope
     - async:
         + Trả về một Deferred
-        + Không chặn thread
+        + Chạy trên scope cha, không chặn thread
         + Xử lý ngoại lệ: Khi gọi await(), không khi khởi tạo
     - runBlocking:
         + Trả về Unit
-        + Chặn thread
+        + Tạo một scope mới và chặn thread hiện tại
         + Ngay lập tức, như code đồng bộ bình thường
 */
 

@@ -1,4 +1,4 @@
-package com.example.flowcoroutine.ui.theme
+package com.example.flowcoroutine.couroutine
 
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
@@ -13,6 +13,7 @@ import kotlinx.coroutines.runBlocking
     - job.join() : tạm dừng cho đến khi job hoàn thành
     - job.cancel() : Hủy job
     - job.cancelAndJoin() : Hủy và đợi cho đến khi job hoàn thành
+    - yield() nhường coroutine khác chạy
 */
 
 fun main (){

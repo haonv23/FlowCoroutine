@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -16,7 +17,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -231,6 +235,27 @@ fun DropDown(list: List<String>) {
     }
 }
 
+@Composable
+fun SelectImageScreen(){
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        Row (
+
+        ) {
+
+        }
+        LazyHorizontalGrid(
+            rows = GridCells.Fixed(3),
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun DropDownPreview() {
@@ -247,5 +272,32 @@ fun GreetingPreview() {
             "Choose Another Image",
             "Cancel"
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Preview() {
+    FlowCoroutineTheme {
+        Popup(
+            "Hands Unrecognized",
+            "We were unable to recognize the hands in the image. Please try again with a different image.",
+            "Choose Another Image",
+            "Cancel"
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewButton() {
+    FlowCoroutineTheme {
+        Button(
+            modifier = Modifier
+                .fillMaxWidth(),
+            onClick = { /*TODO*/ }, // Bo góc ít hơn mặc định
+        ) {
+            Text("Less Rounde123333323 1231231231212312312312312312312312312312312312312312312312312312312312312312323333d Button")
+        }
     }
 }
