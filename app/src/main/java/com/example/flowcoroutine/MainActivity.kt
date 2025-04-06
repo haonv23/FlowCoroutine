@@ -1,6 +1,10 @@
 package com.example.flowcoroutine
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Button
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -43,22 +47,167 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.example.flowcoroutine.ui.theme.BlackBackground
 import com.example.flowcoroutine.ui.theme.FlowCoroutineTheme
 import com.example.flowcoroutine.ui.theme.PurpleTextTitle
 
+/*
+Mỗi ứng dụng hoạt động được gắn với các task, trong một task hoat động theo stack chứa các activity, fragment nếu được addToBackStack
+Các launch mode:
+Standard
+- Luôn tạo một instance mới của Activity trong stack của task, dù đã có instance trước đó hay chưa.
+    1. A → B → C
+    2. A → B → C → D
+- Nếu gọi lại B (Standard):
+    3. A → B → C → D → B (thêm instance mới của B)
+SingleTop
+- Nếu instance của Activity đã ở đầu stack, hệ thống không tạo mới, mà gọi onNewIntent() của Activity đó.
+    1. A → B
+    2. A → B (onNewIntent())
+- Nếu không có C ở đầu stack, sẽ tạo mới.
+    3. A → B → C
+- Tương tự Flag singletop
+SingleTask
+- Nếu Activity đã tồn tại trong stack (ở bất kỳ đâu):
+    → Hệ thống gọi onNewIntent() và xóa hết các Activity phía trên nó.
+- Nếu chưa có → tạo mới.
+    Chỉ có 1 instance duy nhất của Activity này tồn tại trong 1 task.
+    1. A → B → C → D, Gọi E (SingleTask):
+    2. A → B → C → D → E, Gọi B (SingleTask):
+    -  A → B (xóa các activity trên B)
+- Tương tự Flag singletop + cleartask
+SingleInstance
+- Hệ thống tạo task mới riêng biệt để chứa Activity này.
+- Không có Activity khác được tạo thêm vào task này.
+    + Task 1: A → B → C → D
+- Gọi E (SingleInstance):
+    + Task 2: E riêng biệt
+- Quay lại Task 1 vẫn giữ nguyên
+
+Activity Flag:
+- Default: Luôn tạo một instance mới
+- FLAG_ACTIVITY_SINGLE_TOP:
+    + Nếu activity được gọi đã tồn tại trên đỉnh stack, không tạo activity mới,
+        lọt vào callback onNewIntent()
+    + Nếu activity được gọi chưa tồn tại hoặc tồn tại mà không trên đỉnh thì vẫn tạo instance mới của activity đó
+- FLAG_ACTIVITY_CLEAR_TOP:
+    + Nếu activity được gọi đã tồn tại, loại bỏ tất cả activity nằm trên đó và kể cả activity được gọi,
+        tạo một instance mới của activity được gọi
+      1. A → B → C → A, gọi B với CLEAR_TOP
+      2. A → B (instance mới)
+    + Nếu sử dụng với cờ FLAG_ACTIVITY_SINGLE_TOP, onNewIntent() được gọi thay vì tạo mới
+    + Nếu activity được chưa tồn tạo một instance mới
+- FLAG_ACTIVITY_NEW_TASK:
+    + Nếu một task đã chạy cho activity mà được gọi, thì activity mới sẽ không được bắt đầu,
+        thay vào đó, task hiện tại sẽ chỉ được đưa lên foreground với trạng thái của task trước đó
+    + Nếu Sử dụng cờ FLAG_ACTIVITY_MULTIPLE_TASK luôn khởi chạy một task mới
+     1. TaskID 1: A → B, gọi C với FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_MULTIPLE_TASK
+     2. TaskID 1: A → B, TaskID 2: C
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent {
-            FlowCoroutineTheme {
-
-            }
+        setContentView(R.layout.activity_main)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
         }
+        findViewById<TextView>(R.id.tvTittle).text = "Activity A \n taskId: ${this.taskId} \n instanceId ${this.hashCode()}"
+        findViewById<Button>(R.id.btnA).setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+        findViewById<Button>(R.id.btnB).setOnClickListener {
+            startActivity(Intent(this, ActivityB::class.java))
+        }
+        findViewById<Button>(R.id.btnC).setOnClickListener {
+            startActivity(Intent(this, ActivityC::class.java))
+        }
+        findViewById<Button>(R.id.btnD).setOnClickListener {
+            startActivity(Intent(this, ActivityD::class.java))
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        Log.d("Main onNewIntent", "onNewIntent: ")
     }
 }
 
+class ActivityB : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        findViewById<TextView>(R.id.tvTittle).text = "Activity B \n taskId: ${this.taskId} \n instanceId ${this.hashCode()}"
+        findViewById<Button>(R.id.btnA).setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+        findViewById<Button>(R.id.btnB).setOnClickListener {
+            startActivity(Intent(this, ActivityB::class.java))
+        }
+        findViewById<Button>(R.id.btnC).setOnClickListener {
+            startActivity(Intent(this, ActivityC::class.java))
+        }
+        findViewById<Button>(R.id.btnD).setOnClickListener {
+            startActivity(Intent(this, ActivityD::class.java))
+        }
+    }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        Log.d("B onNewIntent", "onNewIntent: ")
+    }
+}
+
+class ActivityC : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        findViewById<TextView>(R.id.tvTittle).text = "Activity C \n taskId: ${this.taskId} \n instanceId ${this.hashCode()}"
+        findViewById<Button>(R.id.btnA).setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+        findViewById<Button>(R.id.btnB).setOnClickListener {
+            startActivity(Intent(this, ActivityB::class.java))
+        }
+        findViewById<Button>(R.id.btnC).setOnClickListener {
+            startActivity(Intent(this, ActivityC::class.java))
+        }
+        findViewById<Button>(R.id.btnD).setOnClickListener {
+            startActivity(Intent(this, ActivityD::class.java))
+        }
+    }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        Log.d("C onNewIntent", "onNewIntent: ")
+    }
+}
+
+class ActivityD : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        findViewById<TextView>(R.id.tvTittle).text = "Activity D \n taskId: ${this.taskId} \n instanceId ${this.hashCode()}"
+        findViewById<Button>(R.id.btnA).setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+        findViewById<Button>(R.id.btnB).setOnClickListener {
+            startActivity(Intent(this, ActivityB::class.java))
+        }
+        findViewById<Button>(R.id.btnC).setOnClickListener {
+            startActivity(Intent(this, ActivityC::class.java))
+        }
+        findViewById<Button>(R.id.btnD).setOnClickListener {
+            startActivity(Intent(this, ActivityD::class.java))
+        }
+    }
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        Log.d("D onNewIntent", "onNewIntent: ")
+    }
+}
 var cachedDensityScale: Float = 1f
 
 fun Number.pxToDp(): Dp {
